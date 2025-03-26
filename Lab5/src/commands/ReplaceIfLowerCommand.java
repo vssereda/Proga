@@ -1,11 +1,10 @@
 package commands;
 
 import utils.CollectionManager;
-import utils.InputHelper;
+import utils.InputHelp;
 import models.StudyGroup;
 
-// replace_if_lowe null {element} : заменить значение по ключу,
-// если новое значение меньше старого
+// заменить значение по ключу, если новое значение меньше старого
 
 public class ReplaceIfLowerCommand implements Command {
     private CollectionManager collectionManager;
@@ -21,7 +20,7 @@ public class ReplaceIfLowerCommand implements Command {
             return;
         }
         String key = args[1];
-        StudyGroup newGroup = InputHelper.readStudyGroup();
+        StudyGroup newGroup = InputHelp.readStudyGroup();
         StudyGroup oldGroup = collectionManager.getCollection().get(key);
         if (oldGroup != null && newGroup.compareTo(oldGroup) < 0) {
             collectionManager.add(key, newGroup);
@@ -29,5 +28,15 @@ public class ReplaceIfLowerCommand implements Command {
         } else {
             System.out.println("Элемент не заменён.");
         }
+    }
+
+    @Override
+    public String getName() {
+        return "replace_if_lowe";
+    }
+
+    @Override
+    public String getDescription() {
+        return "заменить значение по ключу, если новое значение меньше старого";
     }
 }

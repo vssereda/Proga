@@ -1,29 +1,44 @@
 package utils;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import models.StudyGroup;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.*;
+import java.lang.reflect.Type;
 import java.util.Hashtable;
 
-public class FileManager {
-    private String fileName;
+// Менеджер для работы с файлами коллекции
 
-    public FileManager(String fileName) {
-        this.fileName = fileName;
+public class FileManager {
+    private final Gson gson;
+
+    public FileManager() {
+        this.gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .create();
     }
 
-    public Hashtable<String, StudyGroup> readFromFile() throws IOException {
-        Gson gson = new Gson();
-        try (InputStreamReader reader = new InputStreamReader(new FileInputStream(fileName))) {
-            return gson.fromJson(reader, new TypeToken<Hashtable<String, StudyGroup>>() {}.getType());
+    //Загружает коллекцию из файла
+    //IOException если произошла ошибка ввода-вывода
+
+    public Hashtable<String, StudyGroup> loadFromFile(String filename) throws IOException {
+        try (Reader reader = new FileReader(filename)) {
+            Type type = new TypeToken<Hashtable<String, StudyGroup>>() {
+            }.getType();
+            Hashtable<String, StudyGroup> loaded = gson.fromJson(reader, type);
+            return loaded != null ? loaded : new Hashtable<>();
+        } catch (JsonParseException e) {
+            throw new IOException("Ошибка парсинга JSON: " + e.getMessage());
         }
     }
 
-    public void saveToConsole(Hashtable<String, StudyGroup> collection) {
-        Gson gson = new Gson();
-        String json = gson.toJson(collection);
-        System.out.println("Вывод коллекции в консоль:");
-        System.out.println(json);
+    //Сохраняет коллекцию в файл
+    //IOException если произошла ошибка ввода-вывода
+
+    public void saveToFile(Hashtable<String, StudyGroup> collection, String filename) throws IOException {
+        try (Writer writer = new FileWriter(filename)) {
+            gson.toJson(collection, writer);
+        }
     }
 }

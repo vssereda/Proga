@@ -2,7 +2,7 @@ package commands;
 
 import utils.CollectionManager;
 
-// remove_key null : удалить элемент из коллекции по его ключу
+// удалить элемент из коллекции по его ключу
 
 public class RemoveKeyCommand implements Command {
     private CollectionManager collectionManager;
@@ -20,5 +20,15 @@ public class RemoveKeyCommand implements Command {
         String key = args[1];
         collectionManager.remove(key);
         System.out.println("Элемент удалён.");
+    }
+
+    @Override
+    public String getName() {
+        return "remove_key";
+    }
+
+    @Override
+    public String getDescription() {
+        return "удалить элемент из коллекции по его ключу";
     }
 }

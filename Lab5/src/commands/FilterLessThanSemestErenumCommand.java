@@ -4,9 +4,6 @@ import utils.CollectionManager;
 import models.StudyGroup;
 import models.Semester;
 
-//filter_less_than_semester_enum semesterEnum : вывести элементы,
-// значение поля semesterEnum которых меньше заданного
-
 public class FilterLessThanSemestErenumCommand implements Command {
     private CollectionManager collectionManager;
 
@@ -26,5 +23,15 @@ public class FilterLessThanSemestErenumCommand implements Command {
                 System.out.println(group);
             }
         }
+    }
+
+    @Override
+    public String getName() {
+        return "filter_less_than_semester_enum";
+    }
+
+    @Override
+    public String getDescription() {
+        return "вывести элементы, значение поля semesterEnum которых меньше заданного";
     }
 }

@@ -3,10 +3,6 @@ package commands;
 import utils.CollectionManager;
 import models.StudyGroup;
 
-
-// filter_greater_than_students_count studentsCount : вывести
-// элементы, значение поля studentsCount которых больше заданного
-
 public class FilterGreaterThanStudentsCountCommand implements Command {
     private CollectionManager collectionManager;
 
@@ -26,5 +22,15 @@ public class FilterGreaterThanStudentsCountCommand implements Command {
                 System.out.println(group);
             }
         }
+    }
+
+    @Override
+    public String getName() {
+        return "filter_greater_than_students_count";
+    }
+
+    @Override
+    public String getDescription() {
+        return "вывести элементы, значение поля studentsCount которых больше заданного";
     }
 }

@@ -3,8 +3,8 @@ package commands;
 import utils.CollectionManager;
 import models.StudyGroup;
 
-// show : вывести в стандартный поток вывода все элементы коллекции
-// в строковом представлении
+//вывести в стандартный поток вывода все
+// элементы коллекции в строковом представлении
 
 public class ShowCommand implements Command {
     private CollectionManager collectionManager;
@@ -19,5 +19,15 @@ public class ShowCommand implements Command {
             StudyGroup group = collectionManager.getCollection().get(key);
             System.out.println("Ключ: " + key + ", Элемент: " + group);
         }
+    }
+
+    @Override
+    public String getName() {
+        return "show";
+    }
+
+    @Override
+    public String getDescription() {
+        return "вывести все элементы коллекции в строковом представлении";
     }
 }

@@ -2,48 +2,59 @@ package models;
 
 import java.time.LocalDateTime;
 
+//Класс, представляющий учебную группу.
+
 public class StudyGroup implements Comparable<StudyGroup> {
-    private Long id; // Поле не может быть null, значение должно быть больше 0, уникальное, генерируется автоматически
+    private Long id; // Поле не может быть null, значение > 0, уникальное, генерируется автоматически
     private String name; // Поле не может быть null, строка не может быть пустой
     private Coordinates coordinates; // Поле не может быть null
     private LocalDateTime creationDate; // Поле не может быть null, генерируется автоматически
-    private Long studentsCount; // Значение поля должно быть больше 0, может быть null
-    private Integer shouldBeExpelled; // Значение поля должно быть больше 0, может быть null
+    private Long studentsCount; // Значение поля должно быть > 0, может быть null
+    private Integer shouldBeExpelled; // Значение поля должно быть > 0, может быть null
     private FormOfEducation formOfEducation; // Поле может быть null
     private Semester semesterEnum; // Поле не может быть null
     private Person groupAdmin; // Поле может быть null
 
-    // Статический счётчик для генерации уникального id
     private static long idCounter = 1;
 
-    // Конструктор
+
     public StudyGroup(String name, Coordinates coordinates, Long studentsCount,
                       Integer shouldBeExpelled, FormOfEducation formOfEducation,
                       Semester semesterEnum, Person groupAdmin) {
-        this.id = generateId(); // Генерация уникального id
-        this.name = name;
-        this.coordinates = coordinates;
-        this.creationDate = LocalDateTime.now(); // Автоматическая генерация даты создания
-        this.studentsCount = studentsCount;
-        this.shouldBeExpelled = shouldBeExpelled;
-        this.formOfEducation = formOfEducation;
-        this.semesterEnum = semesterEnum;
-        this.groupAdmin = groupAdmin;
+        this.id = generateId();
+        this.creationDate = LocalDateTime.now();
+        setName(name);
+        setCoordinates(coordinates);
+        setStudentsCount(studentsCount);
+        setShouldBeExpelled(shouldBeExpelled);
+        setFormOfEducation(formOfEducation);
+        setSemesterEnum(semesterEnum);
+        setGroupAdmin(groupAdmin);
     }
 
-    // Метод для генерации уникального id
-    private Long generateId() {
+
+
+    //Генерация уникального ID для группы
+
+    private static synchronized long generateId() {
         return idCounter++;
     }
 
-    // Геттеры и сеттеры
+    //Сбрасывает счетчик ID (используется при загрузке из файла)
+
+    public static void resetIdCounter(long startValue) {
+        idCounter = startValue;
+    }
+
+    // Геттеры и сеттеры с валидацией
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         if (id == null || id <= 0) {
-            throw new IllegalArgumentException("ID не может быть null или меньше/равно 0.");
+            throw new IllegalArgumentException("ID must be positive and not null");
         }
         this.id = id;
     }
@@ -54,7 +65,7 @@ public class StudyGroup implements Comparable<StudyGroup> {
 
     public void setName(String name) {
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Имя не может быть null или пустым.");
+            throw new IllegalArgumentException("Name cannot be null or empty");
         }
         this.name = name;
     }
@@ -65,7 +76,7 @@ public class StudyGroup implements Comparable<StudyGroup> {
 
     public void setCoordinates(Coordinates coordinates) {
         if (coordinates == null) {
-            throw new IllegalArgumentException("Координаты не могут быть null.");
+            throw new IllegalArgumentException("Coordinates cannot be null");
         }
         this.coordinates = coordinates;
     }
@@ -76,7 +87,7 @@ public class StudyGroup implements Comparable<StudyGroup> {
 
     public void setCreationDate(LocalDateTime creationDate) {
         if (creationDate == null) {
-            throw new IllegalArgumentException("Дата создания не может быть null.");
+            throw new IllegalArgumentException("Creation date cannot be null");
         }
         this.creationDate = creationDate;
     }
@@ -87,7 +98,7 @@ public class StudyGroup implements Comparable<StudyGroup> {
 
     public void setStudentsCount(Long studentsCount) {
         if (studentsCount != null && studentsCount <= 0) {
-            throw new IllegalArgumentException("Количество студентов должно быть больше 0.");
+            throw new IllegalArgumentException("Students count must be positive");
         }
         this.studentsCount = studentsCount;
     }
@@ -98,7 +109,7 @@ public class StudyGroup implements Comparable<StudyGroup> {
 
     public void setShouldBeExpelled(Integer shouldBeExpelled) {
         if (shouldBeExpelled != null && shouldBeExpelled <= 0) {
-            throw new IllegalArgumentException("Количество отчисленных должно быть больше 0.");
+            throw new IllegalArgumentException("Should be expelled must be positive");
         }
         this.shouldBeExpelled = shouldBeExpelled;
     }
@@ -117,7 +128,7 @@ public class StudyGroup implements Comparable<StudyGroup> {
 
     public void setSemesterEnum(Semester semesterEnum) {
         if (semesterEnum == null) {
-            throw new IllegalArgumentException("SemesterEnum не может быть null.");
+            throw new IllegalArgumentException("Semester cannot be null");
         }
         this.semesterEnum = semesterEnum;
     }
@@ -130,23 +141,40 @@ public class StudyGroup implements Comparable<StudyGroup> {
         this.groupAdmin = groupAdmin;
     }
 
+    //Реализация сравнения для сортировки (по имени)
+
     @Override
     public int compareTo(StudyGroup other) {
         return this.name.compareTo(other.name);
     }
 
+    //Проверяет валидность объекта
+
+    public boolean validate() {
+        try {
+            if (id == null || id <= 0) return false;
+            if (name == null || name.trim().isEmpty()) return false;
+            if (coordinates == null || !coordinates.validate()) return false;
+            if (creationDate == null) return false;
+            if (studentsCount != null && studentsCount <= 0) return false;
+            if (shouldBeExpelled != null && shouldBeExpelled <= 0) return false;
+            if (semesterEnum == null) return false;
+            if (groupAdmin != null && !groupAdmin.validate()) return false;
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    //Форматированное строковое представление объекта
+
     @Override
     public String toString() {
-        return "StudyGroup{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", coordinates=" + coordinates +
-                ", creationDate=" + creationDate +
-                ", studentsCount=" + studentsCount +
-                ", shouldBeExpelled=" + shouldBeExpelled +
-                ", formOfEducation=" + formOfEducation +
-                ", semesterEnum=" + semesterEnum +
-                ", groupAdmin=" + groupAdmin +
-                '}';
+        return String.format(
+                "StudyGroup [id=%d, name='%s', coordinates=%s, created=%s, students=%d, " +
+                        "expelled=%d, form=%s, semester=%s, admin=%s]",
+                id, name, coordinates, creationDate, studentsCount,
+                shouldBeExpelled, formOfEducation, semesterEnum, groupAdmin
+        );
     }
 }

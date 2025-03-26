@@ -1,5 +1,6 @@
 package models;
 
+
 public class Person {
     private String name; // Поле не может быть null, строка не может быть пустой
     private int height; // Значение поля должно быть больше 0
@@ -7,16 +8,30 @@ public class Person {
     private Country nationality; // Поле может быть null
     private Location location; // Поле может быть null
 
-    // Конструктор
-    public Person(String name, int height, Color hairColor, Country nationality, Location location) {
-        this.name = name;
-        this.height = height;
-        this.hairColor = hairColor;
-        this.nationality = nationality;
-        this.location = location;
+    public Person(String name, int height, Color hairColor,
+                  Country nationality, Location location) {
+        setName(name);
+        setHeight(height);
+        setHairColor(hairColor);
+        setNationality(nationality);
+        setLocation(location);
     }
 
-    // Геттеры и сеттеры
+
+    //Проверяет валидность объекта Person
+
+    public boolean validate() {
+        try {
+            if (name == null || name.trim().isEmpty()) return false;
+            if (height <= 0) return false;
+            if (hairColor == null) return false;
+            if (location != null && !location.validate()) return false;
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public String getName() {
         return name;
     }
@@ -66,14 +81,14 @@ public class Person {
         this.location = location;
     }
 
+    //Форматированное строковое представление объекта,
+    // возвращает его строковое представление
+
     @Override
     public String toString() {
-        return "Person{" +
-                "name='" + name + '\'' +
-                ", height=" + height +
-                ", hairColor=" + hairColor +
-                ", nationality=" + nationality +
-                ", location=" + location +
-                '}';
+        return String.format(
+                "Person{name='%s', height=%d, hairColor=%s, nationality=%s, location=%s}",
+                name, height, hairColor, nationality, location
+        );
     }
 }

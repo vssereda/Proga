@@ -1,11 +1,10 @@
 package commands;
 
 import utils.CollectionManager;
-import utils.InputHelper;
+import utils.InputHelp;
 import models.StudyGroup;
 
-// update id {element} : обновить значение элемента коллекции,
-// id которого равен заданному
+// обновить значение элемента коллекции, id которого равен заданному
 
 public class UpdateCommand implements Command {
     private CollectionManager collectionManager;
@@ -21,7 +20,7 @@ public class UpdateCommand implements Command {
             return;
         }
         long id = Long.parseLong(args[1]);
-        StudyGroup newGroup = InputHelper.readStudyGroup();
+        StudyGroup newGroup = InputHelp.readStudyGroup();
         for (StudyGroup group : collectionManager.getCollection().values()) {
             if (group.getId().equals(id)) {
                 collectionManager.getCollection().put(group.getName(), newGroup);
@@ -30,5 +29,15 @@ public class UpdateCommand implements Command {
             }
         }
         System.out.println("Элемент с id " + id + " не найден.");
+    }
+
+    @Override
+    public String getName() {
+        return "update";
+    }
+
+    @Override
+    public String getDescription() {
+        return "обновить значение элемента коллекции, id которого равен заданному";
     }
 }

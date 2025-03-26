@@ -1,0 +1,67 @@
+{
+  "groups": [
+    {
+      "id": 1,
+      "name": "CS-101",
+      "coordinates": {
+        "x": 100,
+        "y": 200
+      },
+      "creationDate": "2023-10-25T14:30:00",
+      "studentsCount": 25,
+      "shouldBeExpelled": 2,
+      "formOfEducation": "DISTANCE_EDUCATION",
+      "semesterEnum": "FOURTH",
+      "groupAdmin": {
+        "name": "Иван Петров",
+        "height": 180,
+        "hairColor": "BLACK",
+        "nationality": "RUSSIA",
+        "location": {
+          "x": 10,
+          "y": 20.5,
+          "z": 30,
+          "name": "Главный корпус"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "MATH-202",
+      "coordinates": {
+        "x": 150,
+        "y": -50
+      },
+      "creationDate": "2023-09-10T09:15:00",
+      "studentsCount": 30,
+      "shouldBeExpelled": 0,
+      "formOfEducation": "FULL_TIME_EDUCATION",
+      "semesterEnum": "SECOND",
+      "groupAdmin": {
+        "name": "Мария Сидорова",
+        "height": 165,
+        "hairColor": "BROWN",
+        "nationality": "GERMANY",
+        "location": {
+          "x": -5,
+          "y": 15.3,
+          "z": 10,
+          "name": "Корпус B"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "PHYS-303",
+      "coordinates": {
+        "x": 300,
+        "y": 100
+      },
+      "creationDate": "2023-11-05T16:45:00",
+      "studentsCount": 15,
+      "formOfEducation": "EVENING_CLASSES",
+      "semesterEnum": "SIXTH",
+      "groupAdmin": null
+    }
+  ]
+}

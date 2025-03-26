@@ -3,12 +3,6 @@ package commands;
 import java.io.File;
 import java.util.Scanner;
 
-
-// Execute_script file_name : считать и исполнить
-// скрипт из указанного файла. В скрипте содержатся команды в
-// таком же виде, в котором их вводит пользователь в интерактивном
-// режиме.
-
 public class ExecuteScriptCommand implements Command {
     @Override
     public void execute(String[] args) {
@@ -25,5 +19,15 @@ public class ExecuteScriptCommand implements Command {
         } catch (Exception e) {
             System.out.println("Ошибка при выполнении скрипта: " + e.getMessage());
         }
+    }
+
+    @Override
+    public String getName() {
+        return "execute_script";
+    }
+
+    @Override
+    public String getDescription() {
+        return "считать и исполнить скрипт из указанного файла";
     }
 }

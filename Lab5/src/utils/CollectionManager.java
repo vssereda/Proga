@@ -1,34 +1,62 @@
 package utils;
 
 import models.StudyGroup;
+
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Hashtable;
 
-public class CollectionManager {
-    private Hashtable<String, StudyGroup> collection = new Hashtable<>();
-    private LocalDateTime initDate;
+//Менеджер для работы с коллекцией StudyGroup
 
-    public CollectionManager() {
-        this.initDate = LocalDateTime.now();
+public class CollectionManager {
+    private final Hashtable<String, StudyGroup> collection = new Hashtable<>();
+    private final FileManager fileManager;
+    private final LocalDateTime initDate;
+
+    public CollectionManager(FileManager fileManager) {
+        this.fileManager = fileManager;
+        this.initDate = LocalDateTime.now(); // Фиксируем время создания менеджера
     }
+
+    //Возвращает коллекцию
+    public Hashtable<String, StudyGroup> getCollection() {
+        return collection;
+    }
+
+    //Возвращает дату инициализации коллекции
+    public LocalDateTime getInitDate() {
+        return initDate;
+    }
+
+
+    //Загружает коллекцию из файла
+    // IOException если произошла ошибка ввода-вывода
+    public void loadCollection(String filename) throws IOException {
+        collection.clear();
+        Hashtable<String, StudyGroup> loaded = fileManager.loadFromFile(filename);
+        collection.putAll(loaded);
+    }
+
+    //Добавляет элемент в коллекцию
 
     public void add(String key, StudyGroup group) {
         collection.put(key, group);
     }
 
-    public void remove(String key) {
-        collection.remove(key);
+    //Удаляет элемент из коллекции  и возвращает true, если элемент был удален
+
+    public boolean remove(String key) {
+        return collection.remove(key) != null;
     }
 
+    //Очищает коллекцию
     public void clear() {
         collection.clear();
     }
 
-    public Hashtable<String, StudyGroup> getCollection() {
-        return collection;
-    }
+    //Возвращает количество элементов в коллекции (размер)
 
-    public LocalDateTime getInitDate() {
-        return initDate;
+    public int size() {
+        return collection.size();
     }
 }

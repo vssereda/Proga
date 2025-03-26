@@ -1,11 +1,10 @@
 package commands;
 
 import utils.CollectionManager;
-import utils.InputHelper;
+import utils.InputHelp;
 import models.StudyGroup;
 
-// remove_greater {element} : удалить из коллекции все элементы,
-// превышающие заданный
+// удалить из коллекции все элементы, превышающие заданный
 
 public class RemoveGreaterCommand implements Command {
     private CollectionManager collectionManager;
@@ -16,8 +15,18 @@ public class RemoveGreaterCommand implements Command {
 
     @Override
     public void execute(String[] args) {
-        StudyGroup group = InputHelper.readStudyGroup();
+        StudyGroup group = InputHelp.readStudyGroup();
         collectionManager.getCollection().entrySet().removeIf(entry -> entry.getValue().compareTo(group) > 0);
         System.out.println("Элементы удалены.");
+    }
+
+    @Override
+    public String getName() {
+        return "remove_greater";
+    }
+
+    @Override
+    public String getDescription() {
+        return "удалить из коллекции все элементы, превышающие заданный";
     }
 }

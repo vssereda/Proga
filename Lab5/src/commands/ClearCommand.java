@@ -2,10 +2,8 @@ package commands;
 
 import utils.CollectionManager;
 
-// Clear : очистить коллекцию
-
 public class ClearCommand implements Command {
-    private CollectionManager collectionManager;
+    private final CollectionManager collectionManager;
 
     public ClearCommand(CollectionManager collectionManager) {
         this.collectionManager = collectionManager;
@@ -15,5 +13,15 @@ public class ClearCommand implements Command {
     public void execute(String[] args) {
         collectionManager.clear();
         System.out.println("Коллекция очищена.");
+    }
+
+    @Override
+    public String getName() {
+        return "clear";
+    }
+
+    @Override
+    public String getDescription() {
+        return "очистить коллекцию";
     }
 }

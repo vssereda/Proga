@@ -1,96 +1,96 @@
-import models.*;
 import commands.*;
-import utils.CollectionManager;
-import utils.FileManager;
-import utils.InputHelper;
-
+import utils.*;
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.Scanner;
 
 public class Main {
+    private static boolean running = true;
+    private static CollectionManager collectionManager;
+    private static FileManager fileManager;
+    private static String filename;
+
     public static void main(String[] args) {
+        // Установка обработчика Ctrl+C
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (running) {
+                System.out.println("\nПолучен сигнал завершения (Ctrl+C). Завершение программы...");
+                saveBeforeExit();
+            }
+        }));
+
         // Получаем имя файла из переменной окружения
-        String fileName = System.getenv("COLLECTION_FILE");
-        if (fileName == null) {
-            System.out.println("Ошибка: переменная окружения COLLECTION_FILE не установлена.");
-            return;
+        filename = System.getenv("COLLECTION_FILE");
+        if (filename == null || filename.isEmpty()) {
+            System.err.println("Не задана переменная окружения COLLECTION_FILE");
+            System.exit(1);
         }
 
         // Инициализация менеджеров
-        FileManager fileManager = new FileManager(fileName);
-        CollectionManager collectionManager = new CollectionManager();
+        fileManager = new FileManager();
+        collectionManager = new CollectionManager(fileManager);
 
-        // Загрузка коллекции из файла
+        // Загрузка коллекции
         try {
-            Hashtable<String, StudyGroup> collection = fileManager.readFromFile();
-            if (collection != null) {
-                collectionManager.getCollection().putAll(collection);
-                System.out.println("Коллекция успешно загружена из файла.");
-            } else {
-                System.out.println("Файл пуст или содержит некорректные данные.");
-            }
+            collectionManager.loadCollection(filename);
+            System.out.println("Коллекция успешно загружена из файла " + filename);
+            System.out.println("Текущее состояние коллекции: " + collectionManager.getCollection().size() + " элементов");
         } catch (IOException e) {
-            System.out.println("Ошибка при чтении файла: " + e.getMessage());
+            System.err.println("Ошибка при загрузке коллекции: " + e.getMessage());
+            System.exit(1);
         }
 
-        // Основной цикл программы
-        while (true) {
-            String input = InputHelper.readString("Введите команду: ");
-            String[] parts = input.split(" ");
-            String commandName = parts[0];
+        // Инициализация менеджера команд
+        CommandManager commandManager = new CommandManager(collectionManager, fileManager, filename);
+        Scanner scanner = new Scanner(System.in);
 
-            switch (commandName) {
-                case "help":
-                    new HelpCommand().execute(parts);
+        System.out.println("Программа запущена. Введите 'help' для списка команд.");
+        System.out.println("Для выхода введите 'exit' или нажмите Ctrl+C");
+
+        // Основной цикл обработки команд
+        while (running) {
+            try {
+                System.out.print("> ");
+                String input = scanner.nextLine().trim();
+
+                if (input.isEmpty()) {
+                    continue;
+                }
+
+                // Разбиваем ввод на команду и аргументы
+                String[] parts = input.split(" ", 2);
+                String commandName = parts[0];
+                String[] commandArgs = parts.length > 1 ? parts[1].split(" ") : new String[0];
+
+                // Обработка команды выхода
+                if ("exit".equalsIgnoreCase(commandName)) {
+                    running = false;
+                    System.out.println("Завершение программы...");
+                    saveBeforeExit();
                     break;
-                case "info":
-                    new InfoCommand(collectionManager).execute(parts);
-                    break;
-                case "show":
-                    new ShowCommand(collectionManager).execute(parts);
-                    break;
-                case "insert":
-                    new InsertCommand(collectionManager).execute(parts);
-                    break;
-                case "update":
-                    new UpdateCommand(collectionManager).execute(parts);
-                    break;
-                case "remove_key":
-                    new RemoveKeyCommand(collectionManager).execute(parts);
-                    break;
-                case "clear":
-                    new ClearCommand(collectionManager).execute(parts);
-                    break;
-                case "save":
-                    new SaveCommand(collectionManager, fileManager).execute(parts);
-                    break;
-                case "execute_script":
-                    new ExecuteScriptCommand().execute(parts);
-                    break;
-                case "exit":
-                    new ExitCommand().execute(parts);
-                    break;
-                case "remove_greater":
-                    new RemoveGreaterCommand(collectionManager).execute(parts);
-                    break;
-                case "replace_if_greater":
-                    new ReplaceIfGreaterCommand(collectionManager).execute(parts);
-                    break;
-                case "replace_if_lowe":
-                    new ReplaceIfLowerCommand(collectionManager).execute(parts);
-                    break;
-                case "filter_less_than_semester_enum":
-                    new FilterLessThanSemestErenumCommand(collectionManager).execute(parts);
-                    break;
-                case "filter_greater_than_students_count":
-                    new FilterGreaterThanStudentsCountCommand(collectionManager).execute(parts);
-                    break;
-                case "print_field_descending_form_of_education":
-                    new PrintFieldDescendingFormOfEducationCommand(collectionManager).execute(parts);
-                    break;
-                default:
-                    System.out.println("Неизвестная команда. Введите 'help' для справки.");
+                }
+
+                // Выполнение команды
+                commandManager.executeCommand(commandName, commandArgs);
+
+                // Отладочный вывод состояния коллекции
+                System.out.println("[DEBUG] Элементов в коллекции: " +
+                        collectionManager.getCollection().size());
+            } catch (Exception e) {
+                System.err.println("Ошибка при выполнении команды: " + e.getMessage());
             }
+        }
+
+        scanner.close();
+    }
+
+    private static void saveBeforeExit() {
+        try {
+            System.out.println("Сохранение коллекции...");
+            fileManager.saveToFile(collectionManager.getCollection(), filename);
+            System.out.println("Коллекция успешно сохранена в файл " + filename);
+            System.out.println("Сохранено элементов: " + collectionManager.getCollection().size());
+        } catch (IOException e) {
+            System.err.println("Ошибка при сохранении коллекции: " + e.getMessage());
         }
     }
 }
